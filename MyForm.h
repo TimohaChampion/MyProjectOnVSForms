@@ -5,14 +5,17 @@
 #include<cstdlib>
 #include<string>
 #include"MyForm1.h"
+
+//#include"Header.h"
+ 
+
+
 bool flag = false;
 int big_value = 0;
-int Min = 0, Max = 0, k = 0;
+double Min = 0, Max = 0;
+int k = 0;
 int value_to_textbox = 1; // количество графиков
 double A, B, C;
-
-
-
 
 namespace MyProject {
 	using namespace System::IO;
@@ -30,6 +33,7 @@ namespace MyProject {
 	public ref class MyForm : public System::Windows::Forms::Form
 	{
 	public:
+		//int key = MyForm1::indexForm2;
 		MyForm(void)
 		{
 			InitializeComponent();
@@ -76,6 +80,8 @@ namespace MyProject {
 	private: System::Windows::Forms::Label^ label9;
 	private: System::Windows::Forms::Label^ label8;
 	private: System::Windows::Forms::Label^ label2;
+	private: System::Windows::Forms::ComboBox^ comboBox1;
+	private: System::Windows::Forms::ComboBox^ comboBox2;
 
 	private:
 		/// <summary>
@@ -95,6 +101,7 @@ namespace MyProject {
 			System::Windows::Forms::DataVisualization::Charting::Series^ series1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Series());
 			this->chart1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Chart());
 			this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
+			this->comboBox2 = (gcnew System::Windows::Forms::ComboBox());
 			this->label2 = (gcnew System::Windows::Forms::Label());
 			this->label9 = (gcnew System::Windows::Forms::Label());
 			this->label8 = (gcnew System::Windows::Forms::Label());
@@ -111,6 +118,7 @@ namespace MyProject {
 			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
 			this->button1 = (gcnew System::Windows::Forms::Button());
 			this->label1 = (gcnew System::Windows::Forms::Label());
+			this->comboBox1 = (gcnew System::Windows::Forms::ComboBox());
 			this->menuStrip1 = (gcnew System::Windows::Forms::MenuStrip());
 			this->справкаToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->оПрограммеToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -145,6 +153,7 @@ namespace MyProject {
 			// 
 			this->groupBox1->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Bottom)
 				| System::Windows::Forms::AnchorStyles::Right));
+			this->groupBox1->Controls->Add(this->comboBox2);
 			this->groupBox1->Controls->Add(this->label2);
 			this->groupBox1->Controls->Add(this->label9);
 			this->groupBox1->Controls->Add(this->label8);
@@ -170,10 +179,21 @@ namespace MyProject {
 			this->groupBox1->TabStop = false;
 			this->groupBox1->Text = L"Входные данные";
 			// 
+			// comboBox2
+			// 
+			this->comboBox2->FormattingEnabled = true;
+			this->comboBox2->Items->AddRange(gcnew cli::array< System::Object^  >(4) { L"Линейный", L"Колонки", L"По точкам", L"Зона" });
+			this->comboBox2->Location = System::Drawing::Point(13, 251);
+			this->comboBox2->Name = L"comboBox2";
+			this->comboBox2->Size = System::Drawing::Size(297, 28);
+			this->comboBox2->TabIndex = 22;
+			this->comboBox2->Text = L"(Выберите один из вариантов)";
+			this->comboBox2->SelectedIndexChanged += gcnew System::EventHandler(this, &MyForm::comboBox2_SelectedIndexChanged);
+			// 
 			// label2
 			// 
 			this->label2->AutoSize = true;
-			this->label2->Location = System::Drawing::Point(68, 306);
+			this->label2->Location = System::Drawing::Point(31, 374);
 			this->label2->Name = L"label2";
 			this->label2->Size = System::Drawing::Size(57, 20);
 			this->label2->TabIndex = 21;
@@ -326,6 +346,15 @@ namespace MyProject {
 			this->label1->Text = L"Введите коэффициенты квадратного уравнения";
 			this->label1->Click += gcnew System::EventHandler(this, &MyForm::label1_Click);
 			// 
+			// comboBox1
+			// 
+			this->comboBox1->FormattingEnabled = true;
+			this->comboBox1->Items->AddRange(gcnew cli::array< System::Object^  >(2) { L"Линейный", L"Колонки" });
+			this->comboBox1->Location = System::Drawing::Point(50, 550);
+			this->comboBox1->Name = L"comboBox1";
+			this->comboBox1->Size = System::Drawing::Size(233, 21);
+			this->comboBox1->TabIndex = 2;
+			// 
 			// menuStrip1
 			// 
 			this->menuStrip1->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left)
@@ -427,16 +456,16 @@ namespace MyProject {
 
 		ofstream f;
 
-		string str = "filename.txt";
+		string str = "zfilename.txt";
 
 
 		f.open(str, ios::out | ios::app);
 		
 		if (f.is_open()) {
-			f << endl << "New Value For:" << A << "x^2+" << B << "x+" << "C" << endl << endl;
+			f << endl << "New Value For:" << A << "x^2+" << B << "x+" << C << endl << endl;
 			string str, str1;
 			for (double i = Min; i < Max; i += 0.05) {
-				double y = sin(i);
+				double y = A * i * i + B * i + C;
 				string str = to_string(i);
 				string str1 = to_string(y);
 				f << str << "\t" << str1 << "\n";
@@ -477,11 +506,34 @@ namespace MyProject {
 			}
 			Max = max;
 			Min = min;	
+
+			
+
 			if (b * b >= a * c * 4) {
 				if (flag)
 				{
 					chart1->Series->Add(Convert::ToString(value_to_textbox));
-					chart1->Series[Convert::ToString(value_to_textbox)]->ChartType = System::Windows::Forms::DataVisualization::Charting::SeriesChartType::Line;
+					switch (comboBox2->SelectedIndex) {
+					case -1:
+						MessageBox::Show("Введите тип графика!");
+						break;
+					case 0:
+						chart1->Series[Convert::ToString(value_to_textbox)]->ChartType = System::Windows::Forms::DataVisualization::Charting::SeriesChartType::Line;
+						break;
+					case 1:
+						chart1->Series[Convert::ToString(value_to_textbox)]->ChartType = System::Windows::Forms::DataVisualization::Charting::SeriesChartType::Column;
+						break;
+					case 2:
+						chart1->Series[Convert::ToString(value_to_textbox)]->ChartType = System::Windows::Forms::DataVisualization::Charting::SeriesChartType::Point;
+						break;
+					case 3:
+						chart1->Series[Convert::ToString(value_to_textbox)]->ChartType = System::Windows::Forms::DataVisualization::Charting::SeriesChartType::Area;
+						break;
+					}
+
+					
+
+
 				}
 				flag = true;
 
@@ -499,7 +551,7 @@ namespace MyProject {
 			
 
 		}
-		label2->Text = Convert::ToString(value_to_textbox);
+		//label2->Text = Convert::ToString(indexForm);
 		
 	}
 	private: System::Void button4_Click(System::Object^ sender, System::EventArgs^ e) { 
@@ -511,8 +563,9 @@ namespace MyProject {
 
 	}
 	private: System::Void MyForm_Load(System::Object^ sender, System::EventArgs^ e) {
-		for (int i = Min; i < Max; i += 0.05)
+		for (double i = Min; i < Max; i += 0.05)
 			chart1->Series["Series1"]->Points->AddXY(0, i);
+		label2->Text = "";
 	}
 	private: System::Void textBox4_TextChanged(System::Object^ sender, System::EventArgs^ e) {
 	}
@@ -524,5 +577,9 @@ private: System::Void chart1_Click(System::Object^ sender, System::EventArgs^ e)
 }
 private: System::Void label2_Click(System::Object^ sender, System::EventArgs^ e) {
 }
+private: System::Void comboBox2_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e) {
+}
 };
 }
+
+
