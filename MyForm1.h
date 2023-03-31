@@ -9,12 +9,14 @@ namespace MyProject {
 	using namespace System::Data;
 	using namespace System::Drawing;
 
+
 	/// <summary>
 	/// Сводка для MyForm1
 	/// </summary>
 	public ref class MyForm1 : public System::Windows::Forms::Form
 	{
 	public:
+		
 		MyForm1(void)
 		{
 			InitializeComponent();
@@ -37,6 +39,8 @@ namespace MyProject {
 	private: System::Windows::Forms::Label^ label1;
 	protected:
 	private: System::Windows::Forms::Label^ label2;
+
+
 
 	private:
 		/// <summary>
@@ -99,5 +103,6 @@ namespace MyProject {
 #pragma endregion
 	private: System::Void MyForm1_Load(System::Object^ sender, System::EventArgs^ e) {
 	}
+	
 	};
 }
